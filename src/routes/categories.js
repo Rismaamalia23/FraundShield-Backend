@@ -8,5 +8,6 @@ router.use(authMiddleware);
 
 router.get('/', roleMiddleware(['admin', 'analyst', 'user']), categoryController.getCategories);
 router.post('/', roleMiddleware(['admin']), categoryController.createCategory);
+router.delete('/:id', roleMiddleware(['admin']), categoryController.deleteCategory);
 
 module.exports = router;

@@ -31,7 +31,30 @@ const getCategories = async (req, res, next) => {
   }
 };
 
+const deleteCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const existing = await categoryModel.getCategoryById(id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Kategori tidak ditemukan', data: null });
+    }
+
+    await categoryModel.deleteCategory(id);
+    await activityLogModel.createLog(req.user.id, `Deleted category ID: ${id}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Kategori berhasil dihapus',
+      data: null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createCategory,
-  getCategories
+  getCategories,
+  deleteCategory
 };

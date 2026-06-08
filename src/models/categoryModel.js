@@ -19,8 +19,14 @@ const getCategoryById = async (id) => {
   return rows[0];
 };
 
+const deleteCategory = async (id) => {
+  const [result] = await db.execute('DELETE FROM categories WHERE id = ?', [id]);
+  return result.affectedRows;
+};
+
 module.exports = {
   createCategory,
   getCategories,
-  getCategoryById
+  getCategoryById,
+  deleteCategory
 };
