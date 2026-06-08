@@ -1,25 +1,37 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-  host: process.env.MYSQLHOST || process.env.DB_HOST,
-  port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT) || 3306,
-  user: process.env.MYSQLUSER || process.env.DB_USER,
-  password: process.env.MYSQLPASSWORD || process.env.DB_PASS,
-  database: process.env.MYSQLDATABASE || process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  family: 4  // force IPv4, hindari ECONNREFUSED di ::1
-});
+// Railway inject MYSQL_URL atau DATABASE_URL saat services di-link
+const connectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL || process.env.MYSQL_PRIVATE_URL;
 
-// Log config yang dipakai (tanpa password)
-console.log('🔌 DB Config:', {
-  host: process.env.MYSQLHOST || process.env.DB_HOST,
-  port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
-  user: process.env.MYSQLUSER || process.env.DB_USER,
-  database: process.env.MYSQLDATABASE || process.env.DB_NAME
-});
+let pool;
+
+if (connectionUrl) {
+  // Pakai URL langsung dari Railway (paling reliable)
+  console.log('🔌 Menggunakan DATABASE_URL untuk koneksi');
+  pool = mysql.createPool(connectionUrl + '?family=4');
+} else {
+  // Fallback: pakai variabel individual (untuk lokal / manual config)
+  const host = process.env.DB_HOST || 'localhost';
+  const port = parseInt(process.env.DB_PORT) || 3306;
+  const user = process.env.DB_USER || 'root';
+  const password = process.env.DB_PASS || '';
+  const database = process.env.DB_NAME || 'fraudshield';
+
+  console.log('🔌 DB Config (manual):', { host, port, user, database });
+
+  pool = mysql.createPool({
+    host,
+    port,
+    user,
+    password,
+    database,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    family: 4
+  });
+}
 
 // Test koneksi saat startup
 pool.getConnection()
@@ -32,4 +44,3 @@ pool.getConnection()
   });
 
 module.exports = pool;
-
