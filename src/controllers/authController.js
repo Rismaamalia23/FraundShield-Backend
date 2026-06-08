@@ -167,9 +167,9 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Email tidak ditemukan', data: null });
     }
     
-    // Buat secret khusus gabungan JWT_SECRET dan password lama
+    // Buat secret khusus gabungan JWT_KEY dan password lama
     // Hal ini memastikan token otomatis hangus setelah password dirubah
-    const secret = process.env.JWT_SECRET + user.password;
+    const secret = process.env.JWT_KEY + user.password;
     const payload = { email: user.email, id: user.id };
     const token = jwt.sign(payload, secret, { expiresIn: '15m' });
     
@@ -206,7 +206,7 @@ const resetPassword = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User tidak ditemukan', data: null });
     }
 
-    const secret = process.env.JWT_SECRET + fullUser.password;
+    const secret = process.env.JWT_KEY + fullUser.password;
     
     try {
       jwt.verify(token, secret);
