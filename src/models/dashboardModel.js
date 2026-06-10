@@ -18,25 +18,6 @@ const getStatistics = async () => {
   const [[{ pending_investigations }]] = await db.execute('SELECT COUNT(*) as pending_investigations FROM investigations WHERE review_status = "pending"');
   const [[{ resolved_investigations }]] = await db.execute('SELECT COUNT(*) as resolved_investigations FROM investigations WHERE review_status = "resolved"');
   const [[{ escalated_investigations }]] = await db.execute('SELECT COUNT(*) as escalated_investigations FROM investigations WHERE review_status = "escalated"');
-
-  // Ambil 5 transaksi terbaru beserta nama user
-  const [recent_transactions] = await db.execute(`
-    SELECT t.id, t.amount, t.location, t.transaction_time, t.risk_score, t.status, u.name as user_name 
-    FROM transactions t
-    JOIN users u ON t.user_id = u.id
-    ORDER BY t.transaction_time DESC
-    LIMIT 5
-  `);
-
-  // Ambil 5 log aktivitas terbaru beserta nama user
-  const [recent_logs] = await db.execute(`
-    SELECT al.id, al.activity, al.created_at, u.name as user_name, u.role as user_role
-    FROM activity_logs al
-    JOIN users u ON al.user_id = u.id
-    ORDER BY al.created_at DESC
-    LIMIT 5
-  `);
-
   return {
     total_transactions: parseInt(total_transactions),
     total_transaction_amount: parseFloat(total_transaction_amount),
@@ -51,9 +32,7 @@ const getStatistics = async () => {
     total_investigations: parseInt(total_investigations),
     pending_investigations: parseInt(pending_investigations),
     resolved_investigations: parseInt(resolved_investigations),
-    escalated_investigations: parseInt(escalated_investigations),
-    recent_transactions,
-    recent_logs
+    escalated_investigations: parseInt(escalated_investigations)
   };
 };
 
