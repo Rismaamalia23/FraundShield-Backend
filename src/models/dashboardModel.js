@@ -28,6 +28,15 @@ const getStatistics = async () => {
     LIMIT 5
   `);
 
+  // Ambil 5 log aktivitas terbaru beserta nama user
+  const [recent_logs] = await db.execute(`
+    SELECT al.id, al.activity, al.created_at, u.name as user_name, u.role as user_role
+    FROM activity_logs al
+    JOIN users u ON al.user_id = u.id
+    ORDER BY al.created_at DESC
+    LIMIT 5
+  `);
+
   return {
     total_transactions: parseInt(total_transactions),
     total_transaction_amount: parseFloat(total_transaction_amount),
@@ -43,7 +52,8 @@ const getStatistics = async () => {
     pending_investigations: parseInt(pending_investigations),
     resolved_investigations: parseInt(resolved_investigations),
     escalated_investigations: parseInt(escalated_investigations),
-    recent_transactions
+    recent_transactions,
+    recent_logs
   };
 };
 
