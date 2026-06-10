@@ -1,3 +1,4 @@
+/** Routing untuk endpoint investigasi (/api/investigations) */
 const express = require('express');
 const router = express.Router();
 const investigationController = require('../controllers/investigationController');

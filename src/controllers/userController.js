@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
 
+/** Mendapatkan Daftar Seluruh User (GET /api/users) */
 const getAllUsers = async (req, res) => {
   try {
     const users = await userModel.getAllUsers();
@@ -18,6 +19,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+/** Memperbarui Role Pengguna (PUT /api/users/:id/role) */
 const updateUserRole = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -59,6 +61,7 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+/** Menghapus Pengguna Berdasarkan ID (DELETE /api/users/:id) */
 const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;

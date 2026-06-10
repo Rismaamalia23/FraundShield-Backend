@@ -1,5 +1,6 @@
 const db = require('../config/database');
 
+/** Membuat aturan deteksi fraud baru di database */
 const createFraudRule = async (ruleData) => {
   const { rule_name, condition_type, risk_point } = ruleData;
   const [result] = await db.execute(
@@ -9,16 +10,19 @@ const createFraudRule = async (ruleData) => {
   return result.insertId;
 };
 
+/** Mengambil daftar seluruh aturan deteksi fraud */
 const getFraudRules = async () => {
   const [rows] = await db.execute('SELECT * FROM fraud_rules ORDER BY id ASC');
   return rows;
 };
 
+/** Mendapatkan aturan deteksi fraud berdasarkan ID */
 const getFraudRuleById = async (id) => {
   const [rows] = await db.execute('SELECT * FROM fraud_rules WHERE id = ?', [id]);
   return rows[0];
 };
 
+/** Memperbarui aturan deteksi fraud yang sudah ada */
 const updateFraudRule = async (id, ruleData) => {
   const { rule_name, condition_type, risk_point } = ruleData;
   const [result] = await db.execute(
@@ -28,6 +32,7 @@ const updateFraudRule = async (id, ruleData) => {
   return result;
 };
 
+/** Menghapus aturan deteksi fraud berdasarkan ID */
 const deleteFraudRule = async (id) => {
   const [result] = await db.execute('DELETE FROM fraud_rules WHERE id = ?', [id]);
   return result;

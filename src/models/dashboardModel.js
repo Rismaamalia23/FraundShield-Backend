@@ -1,5 +1,6 @@
 const db = require('../config/database');
 
+/** Mengambil ringkasan statistik (dashboard metrics) secara menyeluruh */
 const getStatistics = async () => {
   const [[{ total_transactions }]] = await db.execute('SELECT COUNT(*) as total_transactions FROM transactions');
   const [[{ total_transaction_amount }]] = await db.execute('SELECT COALESCE(SUM(amount), 0) as total_transaction_amount FROM transactions');

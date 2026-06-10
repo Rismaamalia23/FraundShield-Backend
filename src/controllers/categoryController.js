@@ -1,6 +1,7 @@
 const categoryModel = require('../models/categoryModel');
 const activityLogModel = require('../models/activityLogModel');
 
+/** Membuat Kategori Transaksi Baru (POST /api/categories) */
 const createCategory = async (req, res, next) => {
   try {
     const { name, description } = req.body;
@@ -18,6 +19,7 @@ const createCategory = async (req, res, next) => {
   }
 };
 
+/** Mendapatkan Daftar Semua Kategori Transaksi (GET /api/categories) */
 const getCategories = async (req, res, next) => {
   try {
     const categories = await categoryModel.getCategories();
@@ -31,6 +33,7 @@ const getCategories = async (req, res, next) => {
   }
 };
 
+/** Menghapus Kategori Transaksi Berdasarkan ID (DELETE /api/categories/:id) */
 const deleteCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -53,6 +56,7 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 
+/** Memperbarui Kategori Transaksi Berdasarkan ID (PUT /api/categories/:id) */
 const updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params;

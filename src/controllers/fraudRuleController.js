@@ -1,6 +1,7 @@
 const fraudRuleModel = require('../models/fraudRuleModel');
 const activityLogModel = require('../models/activityLogModel');
 
+/** Membuat Aturan Deteksi Fraud Baru (POST /api/rules) */
 const createFraudRule = async (req, res, next) => {
   try {
     const { rule_name, condition_type, risk_point } = req.body;
@@ -35,6 +36,7 @@ const createFraudRule = async (req, res, next) => {
   }
 };
 
+/** Mendapatkan Semua Daftar Aturan Deteksi Fraud (GET /api/rules) */
 const getFraudRules = async (req, res, next) => {
   try {
     const rules = await fraudRuleModel.getFraudRules();
@@ -48,6 +50,7 @@ const getFraudRules = async (req, res, next) => {
   }
 };
 
+/** Memperbarui Aturan Deteksi Fraud Berdasarkan ID (PUT /api/rules/:id) */
 const updateFraudRule = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -88,6 +91,7 @@ const updateFraudRule = async (req, res, next) => {
   }
 };
 
+/** Menghapus Aturan Deteksi Fraud Berdasarkan ID (DELETE /api/rules/:id) */
 const deleteFraudRule = async (req, res, next) => {
   try {
     const { id } = req.params;

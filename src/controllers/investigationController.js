@@ -2,6 +2,7 @@ const investigationModel = require('../models/investigationModel');
 const transactionModel = require('../models/transactionModel');
 const activityLogModel = require('../models/activityLogModel');
 
+/** Membuat Investigasi Transaksi Baru oleh Analis (POST /api/investigations) */
 const createInvestigation = async (req, res, next) => {
   try {
     const { transaction_id, note } = req.body;
@@ -38,6 +39,7 @@ const createInvestigation = async (req, res, next) => {
   }
 };
 
+/** Mendapatkan Daftar Semua Investigasi Transaksi (GET /api/investigations) */
 const getInvestigations = async (req, res, next) => {
   try {
     const investigations = await investigationModel.getInvestigations();
@@ -51,6 +53,7 @@ const getInvestigations = async (req, res, next) => {
   }
 };
 
+/** Memperbarui Investigasi Transaksi Berdasarkan ID (PUT /api/investigations/:id) */
 const updateInvestigation = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -78,6 +81,7 @@ const updateInvestigation = async (req, res, next) => {
   }
 };
 
+/** Menghapus Investigasi Transaksi Berdasarkan ID (DELETE /api/investigations/:id) */
 const deleteInvestigation = async (req, res, next) => {
   try {
     const { id } = req.params;

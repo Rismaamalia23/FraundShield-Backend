@@ -1,6 +1,20 @@
 const transactionModel = require('../models/transactionModel');
 const fraudRuleModel = require('../models/fraudRuleModel');
 
+/**
+ * Menghitung skor risiko fraud berdasarkan aturan (rules) yang aktif di database.
+ * 
+ * INPUT:
+ * transactionData = {
+ *   user_id: 4,
+ *   amount: 15000000,
+ *   location: "Jakarta",
+ *   transaction_time: "2026-06-11T02:00:00.000Z"
+ * }
+ * 
+ * OUTPUT:
+ * score = 75 (berupa angka akumulasi risk_point dari aturan yang terpicu)
+ */
 const calculateFraudScore = async (transactionData) => {
   let score = 0;
   const { user_id, amount, location, transaction_time } = transactionData;
@@ -20,14 +34,17 @@ const calculateFraudScore = async (transactionData) => {
 
     switch (type) {
       case 'amount_high':
+        // Terpicu jika nominal transaksi di atas Rp 10.000.000
         if (parseFloat(amount) > 10000000) score += rule.risk_point;
         break;
 
       case 'high_frequency':
+        // Terpicu jika user sudah melakukan transaksi > 5 kali
         if (txCount > 5) score += rule.risk_point;
         break;
 
       case 'location':
+        // Terpicu jika lokasi saat ini berbeda dengan lokasi transaksi terakhir nasabah
         if (lastLocationInfo && lastLocationInfo.location && location) {
           if (lastLocationInfo.location.toLowerCase() !== location.toString().toLowerCase()) {
             score += rule.risk_point;
@@ -36,6 +53,7 @@ const calculateFraudScore = async (transactionData) => {
         break;
 
       case 'night_time':
+        // Terpicu jika transaksi dilakukan pada jam malam (00:00 - 04:00)
         if (hour >= 0 && hour <= 4) score += rule.risk_point;
         break;
         
@@ -48,12 +66,33 @@ const calculateFraudScore = async (transactionData) => {
   return score;
 };
 
+/**
+ * Menentukan status akhir transaksi berdasarkan skor risiko.
+ * 
+ * INPUT:
+ * score = 75 (angka total skor risiko)
+ * 
+ * OUTPUT:
+ * status = "blocked", "suspicious", atau "normal" (string)
+ */
 const determineStatus = (score) => {
   if (score >= 70) return 'blocked';
   if (score >= 40) return 'suspicious';
   return 'normal';
 };
 
+/**
+ * Mengevaluasi transaksi secara menyeluruh (skor risiko + status akhir).
+ * 
+ * INPUT:
+ * transactionData = { user_id, amount, location, transaction_time }
+ * 
+ * OUTPUT:
+ * {
+ *   risk_score: 75,
+ *   status: "blocked"
+ * }
+ */
 const evaluateTransaction = async (transactionData) => {
   const risk_score = await calculateFraudScore(transactionData);
   const status = determineStatus(risk_score);

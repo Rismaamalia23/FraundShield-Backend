@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../models/userModel');
 const { generateToken } = require('../utils/jwt');
 
+/** Registrasi User Baru (POST /api/auth/register) */
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -68,6 +69,7 @@ const register = async (req, res) => {
   }
 };
 
+/** Login User / Analis / Admin (POST /api/auth/login) */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -126,6 +128,7 @@ const login = async (req, res) => {
   }
 };
 
+/** Melihat Profil User yang Login (GET /api/auth/profile) */
 const profile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -156,6 +159,7 @@ const profile = async (req, res) => {
   }
 };
 
+/** Mengajukan Permintaan Lupa Password (POST /api/auth/forgot-password) */
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -188,6 +192,7 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+/** Mereset Password Menggunakan Token Reset (POST /api/auth/reset-password) */
 const resetPassword = async (req, res) => {
   try {
     const { userId, token, newPassword } = req.body;

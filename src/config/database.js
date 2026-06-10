@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Railway inject MYSQL_URL atau DATABASE_URL saat services di-link
+/** Inisialisasi pool koneksi database MySQL menggunakan URL Railway atau manual fallback */
 const connectionUrl = process.env.MYSQL_URL || process.env.DATABASE_URL || process.env.MYSQL_PRIVATE_URL;
 
 let pool;

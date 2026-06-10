@@ -2,6 +2,36 @@ const transactionModel = require('../models/transactionModel');
 const fraudDetectionService = require('../services/fraudDetectionService');
 const activityLogModel = require('../models/activityLogModel');
 
+/**
+ * Membuat Transaksi Baru dan Mendeteksi Fraud Secara Real-time.
+ * 
+ * METHOD: POST
+ * URL: /api/transactions
+ * ACCESS: Admin, User (Nasabah)
+ * 
+ * INPUT (req.body):
+ * {
+ *   "category_id": 1,
+ *   "amount": 5000000000,
+ *   "location": "India",
+ *   "transaction_time": "2026-06-01 00:00:00" (opsional)
+ * }
+ * 
+ * OUTPUT (res.json):
+ * {
+ *   "success": true,
+ *   "message": "Transaksi berhasil dibuat",
+ *   "data": {
+ *     "id": 19,
+ *     "user_id": 4,
+ *     "category_id": 1,
+ *     "amount": 5000000000,
+ *     "location": "India",
+ *     "risk_score": 75,
+ *     "status": "blocked"
+ *   }
+ * }
+ */
 const createTransaction = async (req, res, next) => {
   try {
     const { category_id, amount, location, transaction_time } = req.body;
@@ -69,10 +99,37 @@ const createTransaction = async (req, res, next) => {
   }
 };
 
+/**
+ * Mendapatkan Daftar Riwayat Transaksi.
+ * 
+ * METHOD: GET
+ * URL: /api/transactions
+ * ACCESS: Admin, Analyst, User
+ * 
+ * INPUT: None (Menggunakan query param jika ada filter, tapi default kosong)
+ * 
+ * OUTPUT (res.json):
+ * {
+ *   "success": true,
+ *   "message": "Berhasil mengambil data transaksi",
+ *   "data": [
+ *     {
+ *       "id": 19,
+ *       "user_id": 4,
+ *       "category_id": 1,
+ *       "amount": "5000000000.00",
+ *       "location": "India",
+ *       "risk_score": 75,
+ *       "status": "blocked",
+ *       "created_at": "2026-06-11T01:00:00.000Z"
+ *     }
+ *   ]
+ * }
+ */
 const getTransactions = async (req, res, next) => {
   try {
     let filters = {};
-    // If user role is 'user', they can only see their own transactions
+    // Jika user biasa yang login, mereka hanya boleh melihat transaksi miliknya sendiri
     if (req.user.role === 'user') {
       filters.user_id = req.user.id;
     }
@@ -89,6 +146,28 @@ const getTransactions = async (req, res, next) => {
   }
 };
 
+/**
+ * Memperbarui Status Transaksi (Manual Override).
+ * 
+ * METHOD: PUT
+ * URL: /api/transactions/:id
+ * ACCESS: Admin, Analyst
+ * 
+ * INPUT (req.body):
+ * {
+ *   "status": "reviewed"
+ * }
+ * 
+ * OUTPUT (res.json):
+ * {
+ *   "success": true,
+ *   "message": "Status transaksi berhasil diupdate",
+ *   "data": {
+ *     "id": 19,
+ *     "status": "reviewed"
+ *   }
+ * }
+ */
 const updateTransaction = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -135,6 +214,22 @@ const updateTransaction = async (req, res, next) => {
   }
 };
 
+/**
+ * Menghapus Transaksi Dari Sistem.
+ * 
+ * METHOD: DELETE
+ * URL: /api/transactions/:id
+ * ACCESS: Admin
+ * 
+ * INPUT: None
+ * 
+ * OUTPUT (res.json):
+ * {
+ *   "success": true,
+ *   "message": "Transaksi berhasil dihapus",
+ *   "data": null
+ * }
+ */
 const deleteTransaction = async (req, res, next) => {
   try {
     const { id } = req.params;

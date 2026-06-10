@@ -1,3 +1,4 @@
+/** Routing untuk endpoint kategori transaksi (/api/categories) */
 const express = require('express');
 const router = express.Router();
 const categoryController = require('../controllers/categoryController');

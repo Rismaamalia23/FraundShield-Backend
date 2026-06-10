@@ -1,3 +1,4 @@
+/** Routing untuk endpoint riwayat aktivitas user (/api/logs) */
 const express = require('express');
 const router = express.Router();
 const activityLogController = require('../controllers/activityLogController');

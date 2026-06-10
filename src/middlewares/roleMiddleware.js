@@ -1,3 +1,4 @@
+/** Middleware untuk membatasi akses endpoint berdasarkan role user */
 const checkRole = (roles) => {
   return (req, res, next) => {
     // Pastikan req.user sudah ada (diset oleh authMiddleware)

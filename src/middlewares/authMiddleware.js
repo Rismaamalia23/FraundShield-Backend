@@ -1,5 +1,6 @@
 const { verifyToken } = require('../utils/jwt');
 
+/** Middleware untuk memverifikasi JWT Token pada request header */
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

@@ -1,5 +1,6 @@
 const activityLogModel = require('../models/activityLogModel');
 
+/** Mendapatkan Daftar Riwayat Aktivitas Seluruh Pengguna (GET /api/logs) */
 const getActivityLogs = async (req, res, next) => {
   try {
     const logs = await activityLogModel.getLogs();

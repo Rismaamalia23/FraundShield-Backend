@@ -1,3 +1,4 @@
+/** Routing untuk endpoint aturan deteksi fraud (/api/rules) */
 const express = require('express');
 const router = express.Router();
 const fraudRuleController = require('../controllers/fraudRuleController');
