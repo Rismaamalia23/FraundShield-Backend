@@ -9,6 +9,15 @@ const createFraudRule = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Semua field (rule_name, condition_type, risk_point) harus diisi', data: null });
     }
 
+    const validConditionTypes = ['amount_high', 'high_frequency', 'location', 'night_time'];
+    if (!validConditionTypes.includes(condition_type)) {
+      return res.status(400).json({
+        success: false,
+        message: 'condition_type tidak valid. Gunakan: amount_high, high_frequency, location, atau night_time',
+        data: null
+      });
+    }
+
     if (isNaN(risk_point)) {
       return res.status(400).json({ success: false, message: 'risk_point harus berupa angka', data: null });
     }
@@ -46,6 +55,15 @@ const updateFraudRule = async (req, res, next) => {
 
     if (!rule_name || !condition_type || risk_point === undefined) {
       return res.status(400).json({ success: false, message: 'Semua field (rule_name, condition_type, risk_point) harus diisi', data: null });
+    }
+
+    const validConditionTypes = ['amount_high', 'high_frequency', 'location', 'night_time'];
+    if (!validConditionTypes.includes(condition_type)) {
+      return res.status(400).json({
+        success: false,
+        message: 'condition_type tidak valid. Gunakan: amount_high, high_frequency, location, atau night_time',
+        data: null
+      });
     }
 
     if (isNaN(risk_point)) {

@@ -28,8 +28,8 @@ const calculateFraudScore = async (transactionData) => {
         break;
 
       case 'location':
-        if (lastLocationInfo && lastLocationInfo.location) {
-          if (lastLocationInfo.location.toLowerCase() !== location.toLowerCase()) {
+        if (lastLocationInfo && lastLocationInfo.location && location) {
+          if (lastLocationInfo.location.toLowerCase() !== location.toString().toLowerCase()) {
             score += rule.risk_point;
           }
         }

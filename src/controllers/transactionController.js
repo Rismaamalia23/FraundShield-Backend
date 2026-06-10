@@ -7,6 +7,23 @@ const createTransaction = async (req, res, next) => {
     const { category_id, amount, location, transaction_time } = req.body;
     const user_id = req.user.id;
 
+    // Validasi input
+    if (category_id === undefined || amount === undefined || !location) {
+      return res.status(400).json({
+        success: false,
+        message: 'Field category_id, amount, dan location harus diisi',
+        data: null
+      });
+    }
+
+    if (isNaN(amount) || parseFloat(amount) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'amount harus berupa angka yang valid dan lebih besar dari 0',
+        data: null
+      });
+    }
+
     // Fraud Detection
     const { risk_score, status } = await fraudDetectionService.evaluateTransaction({
       user_id,
@@ -41,6 +58,13 @@ const createTransaction = async (req, res, next) => {
       }
     });
   } catch (error) {
+    if (error.message && error.message.includes('foreign key constraint fails')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Gagal membuat transaksi: category_id tidak valid atau user_id tidak valid',
+        data: null
+      });
+    }
     next(error);
   }
 };
