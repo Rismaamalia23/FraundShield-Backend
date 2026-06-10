@@ -24,9 +24,19 @@ const deleteCategory = async (id) => {
   return result.affectedRows;
 };
 
+const updateCategory = async (id, categoryData) => {
+  const { name, description } = categoryData;
+  const [result] = await db.execute(
+    'UPDATE categories SET name = ?, description = ? WHERE id = ?',
+    [name, description, id]
+  );
+  return result;
+};
+
 module.exports = {
   createCategory,
   getCategories,
   getCategoryById,
-  deleteCategory
+  deleteCategory,
+  updateCategory
 };

@@ -53,8 +53,36 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 
+const updateCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, description } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ success: false, message: 'Nama kategori harus diisi', data: null });
+    }
+
+    const existing = await categoryModel.getCategoryById(id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: 'Kategori tidak ditemukan', data: null });
+    }
+
+    await categoryModel.updateCategory(id, { name, description });
+    await activityLogModel.createLog(req.user.id, `Updated category ID: ${id}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Kategori berhasil diupdate',
+      data: { id: parseInt(id), name, description }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createCategory,
   getCategories,
-  deleteCategory
+  deleteCategory,
+  updateCategory
 };
