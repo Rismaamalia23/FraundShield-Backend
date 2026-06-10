@@ -94,73 +94,42 @@ const updateTransaction = async (req, res, next) => {
     const { id } = req.params;
     const { status, amount, location, category_id, transaction_time } = req.body;
 
+    // 1. Tolak jika ada upaya mengubah detail transaksi (amount, location, dll)
+    if (amount !== undefined || location !== undefined || category_id !== undefined || transaction_time !== undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Detail transaksi (amount, location, category_id, transaction_time) bersifat permanen dan tidak dapat diubah',
+        data: null
+      });
+    }
+
+    // 2. Pastikan status dikirim
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'Field status harus diisi untuk melakukan update status transaksi',
+        data: null
+      });
+    }
+
     const existing = await transactionModel.getTransactionById(id);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'Transaksi tidak ditemukan', data: null });
     }
 
-    // Jika user biasa yang login, pastikan ini transaksi miliknya
-    if (req.user.role === 'user' && existing.user_id !== req.user.id) {
-      return res.status(403).json({ success: false, message: 'Akses ditolak: Hanya dapat mengubah transaksi sendiri', data: null });
+    const validStatuses = ['normal', 'suspicious', 'blocked', 'reviewed'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: 'Status tidak valid', data: null });
     }
 
-    // Skenario 1: Update Status (Hanya untuk Admin / Analyst)
-    if (status) {
-      if (req.user.role === 'user') {
-        return res.status(403).json({ success: false, message: 'User tidak diizinkan mengubah status transaksi secara manual', data: null });
-      }
+    await transactionModel.updateTransactionStatus(id, status);
+    await activityLogModel.createLog(req.user.id, `Updated transaction ID: ${id} status to: ${status}`);
 
-      const validStatuses = ['normal', 'suspicious', 'blocked', 'reviewed'];
-      if (!validStatuses.includes(status)) {
-        return res.status(400).json({ success: false, message: 'Status tidak valid', data: null });
-      }
-
-      await transactionModel.updateTransactionStatus(id, status);
-      await activityLogModel.createLog(req.user.id, `Updated transaction ID: ${id} status to: ${status}`);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Status transaksi berhasil diupdate',
-        data: { id: parseInt(id), status }
-      });
-    }
-
-    // Skenario 2: Update Data Transaksi (amount, location, dll)
-    // Jika amount/location diubah, fraud score harus dihitung ulang!
-    if (amount || location || category_id || transaction_time) {
-      const newAmount = amount || existing.amount;
-      const newLocation = location || existing.location;
-      const newTime = transaction_time || existing.transaction_time;
-      const newCat = category_id || existing.category_id;
-
-      const { risk_score, status: newStatus } = await fraudDetectionService.evaluateTransaction({
-        user_id: existing.user_id,
-        amount: newAmount,
-        location: newLocation,
-        transaction_time: newTime
-      });
-
-      await transactionModel.updateTransactionDetails(id, {
-        category_id: newCat,
-        amount: newAmount,
-        location: newLocation,
-        transaction_time: newTime,
-        risk_score,
-        status: newStatus
-      });
-
-      await activityLogModel.createLog(req.user.id, `Updated transaction data ID: ${id}`);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Data transaksi berhasil diupdate & Fraud Score dihitung ulang',
-        data: { id: parseInt(id), amount: newAmount, location: newLocation, risk_score, status: newStatus }
-      });
-    }
-
-    // Jika tidak ada data yang dikirim sama sekali
-    return res.status(400).json({ success: false, message: 'Tidak ada data yang diupdate', data: null });
-
+    res.status(200).json({
+      success: true,
+      message: 'Status transaksi berhasil diupdate',
+      data: { id: parseInt(id), status }
+    });
   } catch (error) {
     next(error);
   }
