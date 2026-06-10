@@ -7,5 +7,6 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 router.use(authMiddleware);
 
 router.get('/', roleMiddleware(['admin', 'analyst']), dashboardController.getDashboardStats);
+router.get('/logs', roleMiddleware(['admin', 'analyst']), dashboardController.getActivityLogs);
 
 module.exports = router;
