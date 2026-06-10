@@ -6,6 +6,7 @@ const categoriesRoutes = require('./routes/categories');
 const investigationsRoutes = require('./routes/investigations');
 const fraudRulesRoutes = require('./routes/fraudRules');
 const dashboardRoutes = require('./routes/dashboard');
+const activityLogsRoutes = require('./routes/activityLogs');
 const app = express();
 
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use('/api/categories', categoriesRoutes);
 app.use('/api/investigations', investigationsRoutes);
 app.use('/api/rules', fraudRulesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/logs', activityLogsRoutes);
 
 // Handling undefined routes
 app.use((req, res, next) => {
