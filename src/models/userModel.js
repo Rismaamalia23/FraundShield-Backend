@@ -17,6 +17,13 @@ const getUserByEmail = async (email) => {
   return rows[0];
 };
 
+const getAllUsers = async () => {
+  const [rows] = await db.execute(
+    'SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC'
+  );
+  return rows;
+};
+
 const getUserById = async (id) => {
   const [rows] = await db.execute(
     'SELECT id, name, email, role, created_at FROM users WHERE id = ?',
@@ -48,6 +55,7 @@ const deleteUserById = async (id) => {
 
 module.exports = {
   createUser,
+  getAllUsers,
   getUserByEmail,
   getUserById,
   updateRoleById,

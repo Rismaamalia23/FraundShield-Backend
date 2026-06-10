@@ -5,12 +5,7 @@ const checkRole = require('../middlewares/roleMiddleware');
 const userController = require('../controllers/userController');
 
 // a) Endpoint hanya untuk ADMIN
-router.get('/admin', authMiddleware, checkRole(['admin']), (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Akses khusus admin'
-  });
-});
+router.get('/admin', authMiddleware, checkRole(['admin']), userController.getAllUsers);
 
 // b) Endpoint untuk ADMIN dan ANALIS
 router.get('/analis', authMiddleware, checkRole(['admin', 'analis']), (req, res) => {

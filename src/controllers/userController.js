@@ -1,5 +1,23 @@
 const userModel = require('../models/userModel');
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userModel.getAllUsers();
+    res.status(200).json({
+      success: true,
+      message: 'Berhasil mengambil data seluruh user',
+      data: users
+    });
+  } catch (error) {
+    console.error('Error saat get all users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan pada server saat mengambil data user',
+      data: null
+    });
+  }
+};
+
 const updateUserRole = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -74,6 +92,7 @@ const deleteUser = async (req, res) => {
 };
 
 module.exports = {
+  getAllUsers,
   updateUserRole,
   deleteUser
 };
