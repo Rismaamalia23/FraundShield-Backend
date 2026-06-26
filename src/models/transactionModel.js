@@ -19,11 +19,51 @@ const getTransactions = async (filters = {}) => {
     query += ' AND user_id = ?';
     params.push(filters.user_id);
   }
+
+  if (filters.status) {
+    query += ' AND status = ?';
+    params.push(filters.status);
+  }
+
+  if (filters.search) {
+    query += ' AND (location LIKE ? OR status LIKE ?)';
+    params.push(`%${filters.search}%`, `%${filters.search}%`);
+  }
   
   query += ' ORDER BY created_at DESC';
+
+  if (filters.limit !== undefined && filters.offset !== undefined) {
+    query += ' LIMIT ? OFFSET ?';
+    // query parameters for LIMIT and OFFSET should be integers
+    params.push(filters.limit, filters.offset);
+  }
   
   const [rows] = await db.execute(query, params);
   return rows;
+};
+
+/** Menghitung jumlah seluruh transaksi dengan filter opsional */
+const getTransactionCount = async (filters = {}) => {
+  let query = 'SELECT COUNT(*) as count FROM transactions WHERE 1=1';
+  let params = [];
+
+  if (filters.user_id) {
+    query += ' AND user_id = ?';
+    params.push(filters.user_id);
+  }
+
+  if (filters.status) {
+    query += ' AND status = ?';
+    params.push(filters.status);
+  }
+
+  if (filters.search) {
+    query += ' AND (location LIKE ? OR status LIKE ?)';
+    params.push(`%${filters.search}%`, `%${filters.search}%`);
+  }
+
+  const [rows] = await db.execute(query, params);
+  return rows[0].count;
 };
 
 /** Mendapatkan detail transaksi berdasarkan ID */
@@ -69,6 +109,7 @@ const getLastTransactionLocation = async (user_id) => {
 module.exports = {
   createTransaction,
   getTransactions,
+  getTransactionCount,
   getTransactionById,
   updateTransactionStatus,
   updateTransactionDetails,

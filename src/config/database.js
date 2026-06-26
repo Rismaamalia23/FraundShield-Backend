@@ -8,7 +8,7 @@ let pool;
 
 if (connectionUrl) {
   // Pakai URL langsung dari Railway (paling reliable)
-  console.log('🔌 Menggunakan DATABASE_URL untuk koneksi');
+  console.log(' Menggunakan DATABASE_URL untuk koneksi');
   pool = mysql.createPool(connectionUrl + '?family=4');
 } else {
   // Fallback: pakai variabel individual (untuk lokal / manual config)
@@ -18,7 +18,7 @@ if (connectionUrl) {
   const password = process.env.DB_PASS || '';
   const database = process.env.DB_NAME || 'fraudshield';
 
-  console.log('🔌 DB Config (manual):', { host, port, user, database });
+  console.log(' DB Config (manual):', { host, port, user, database });
 
   pool = mysql.createPool({
     host,
@@ -36,11 +36,11 @@ if (connectionUrl) {
 // Test koneksi saat startup
 pool.getConnection()
   .then(conn => {
-    console.log('✅ Database connected successfully');
+    console.log(' Database connected successfully');
     conn.release();
   })
   .catch(err => {
-    console.error('❌ Database connection failed:', err.message);
+    console.error(' Database connection failed:', err.message);
   });
 
 module.exports = pool;

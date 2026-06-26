@@ -128,17 +128,65 @@ const createTransaction = async (req, res, next) => {
  */
 const getTransactions = async (req, res, next) => {
   try {
-    let filters = {};
+    // Validasi query parameter page
+    if (req.query.page !== undefined) {
+      const pageVal = parseInt(req.query.page);
+      if (isNaN(pageVal) || pageVal < 1) {
+        return res.status(400).json({
+          success: false,
+          message: 'page harus berupa angka minimal 1',
+          data: null
+        });
+      }
+    }
+
+    // Validasi query parameter limit
+    if (req.query.limit !== undefined) {
+      const limitVal = parseInt(req.query.limit);
+      if (isNaN(limitVal) || limitVal < 1 || limitVal > 100) {
+        return res.status(400).json({
+          success: false,
+          message: 'limit harus berupa angka antara 1 dan 100',
+          data: null
+        });
+      }
+    }
+
+    const page = req.query.page !== undefined ? parseInt(req.query.page) : 1;
+    const limit = req.query.limit !== undefined ? parseInt(req.query.limit) : 10;
+    const offset = (page - 1) * limit;
+
+    let filters = {
+      limit,
+      offset
+    };
+
     // Jika user biasa yang login, mereka hanya boleh melihat transaksi miliknya sendiri
     if (req.user.role === 'user') {
       filters.user_id = req.user.id;
     }
 
+    if (req.query.status) {
+      filters.status = req.query.status;
+    }
+
+    if (req.query.search) {
+      filters.search = req.query.search;
+    }
+
+    const total_data = await transactionModel.getTransactionCount(filters);
     const transactions = await transactionModel.getTransactions(filters);
+    const total_pages = Math.ceil(total_data / limit);
 
     res.status(200).json({
       success: true,
       message: 'Berhasil mengambil data transaksi',
+      pagination: {
+        current_page: page,
+        limit: limit,
+        total_data: total_data,
+        total_pages: total_pages
+      },
       data: transactions
     });
   } catch (error) {
