@@ -33,9 +33,11 @@ const getTransactions = async (filters = {}) => {
   query += ' ORDER BY created_at DESC';
 
   if (filters.limit !== undefined && filters.offset !== undefined) {
-    query += ' LIMIT ? OFFSET ?';
-    // query parameters for LIMIT and OFFSET should be integers
-    params.push(filters.limit, filters.offset);
+    const limitVal = parseInt(filters.limit);
+    const offsetVal = parseInt(filters.offset);
+    if (!isNaN(limitVal) && !isNaN(offsetVal)) {
+      query += ` LIMIT ${limitVal} OFFSET ${offsetVal}`;
+    }
   }
   
   const [rows] = await db.execute(query, params);
